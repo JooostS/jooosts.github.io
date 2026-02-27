@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>4-op-een-rij (PWA)</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="title">
+      <h1>4-op-een-rij</h1>
+      <p class="subtitle">Offline & installeerbaar (PWA)</p>
+    </div>
+
+    <div class="top-actions">
+      <button id="newGameBtn" class="btn" type="button">Nieuw spel</button>
+      <button id="undoBtn" class="btn" type="button">Undo</button>
+      <button id="resetScoreBtn" class="btn btn-secondary" type="button">Reset score</button>
+      <button id="installBtn" class="btn btn-secondary hidden" type="button">Installeren</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel" aria-label="Spelstatus">
+      <div class="status-row">
+        <div class="turn-indicator" aria-hidden="true">
+          <span id="turnDot" class="dot dot-red"></span>
+        </div>
+        <div>
+          <div id="turnText" class="turn-text">Rood is aan de beurt</div>
+          <div id="messageText" class="message">Gebruik muis/touch of pijltjes + Enter.</div>
+        </div>
+      </div>
+
+      <!-- ARIA live region for screenreaders -->
+      <div id="liveRegion" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+      <div class="score" aria-label="Scorebord">
+        <div class="score-card">
+          <div class="label">Rood</div>
+          <div class="value" id="scoreRed">0</div>
+        </div>
+        <div class="score-card">
+          <div class="label">Geel</div>
+          <div class="value" id="scoreYellow">0</div>
+        </div>
+        <div class="score-card">
+          <div class="label">Gelijk</div>
+          <div class="value" id="scoreDraw">0</div>
+        </div>
+      </div>
+
+      <div class="help">
+        <h2>Keyboard</h2>
+        <ul>
+          <li><kbd>←</kbd>/<kbd>→</kbd> kies kolom</li>
+          <li><kbd>Enter</kbd> / <kbd>Spatie</kbd> plaats steen</li>
+          <li><kbd>N</kbd> nieuw spel</li>
+          <li><kbd>U</kbd> undo</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="game">
+      <div class="board-wrap">
+        <div class="column-hint" aria-hidden="true">
+          Geselecteerde kolom: <span id="selectedColText">1</span>
+        </div>
+
+        <!-- The board is a keyboard-focusable "application" region -->
+        <div
+          id="board"
+          class="board"
+          role="application"
+          tabindex="0"
+          aria-label="Spelbord 7 kolommen bij 6 rijen. Gebruik pijltjes en Enter om te spelen."
+        >
+          <!-- Filled by JS -->
+        </div>
+
+        <div class="legend" aria-hidden="true">
+          <span class="legend-item"><span class="chip chip-red"></span> Rood</span>
+          <span class="legend-item"><span class="chip chip-yellow"></span> Geel</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <small>
+      Tip: open DevTools → Application → Service Workers om offline te testen.
+    </small>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
