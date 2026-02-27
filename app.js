@@ -409,26 +409,71 @@
   }
 
   // beforeinstallprompt handling (optional)
+    // beforeinstallprompt handling (Android/desktop Chrome/Edge)
   function setupInstallPrompt() {
+    // Install button is always visible; we adapt behavior based on availability.
+    updateInstallButtonState();
+
     window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent auto mini-infobar
+      // Some browsers show their own UI; we store the event to trigger it on button click.
       e.preventDefault();
       deferredInstallPrompt = e;
-      el.installBtn.classList.remove('hidden');
+      updateInstallButtonState();
+      announce('Installeren is beschikbaar. Klik op de knop Installeren / Startscherm.');
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      updateInstallButtonState();
+      announce('App is geïnstalleerd.');
     });
 
     el.installBtn.addEventListener('click', async () => {
-      if (!deferredInstallPrompt) return;
-      el.installBtn.disabled = true;
-      deferredInstallPrompt.prompt();
-      try {
-        await deferredInstallPrompt.userChoice;
-      } finally {
-        deferredInstallPrompt = null;
-        el.installBtn.classList.add('hidden');
-        el.installBtn.disabled = false;
+      // If we have the native prompt event, use it.
+      if (deferredInstallPrompt) {
+        el.installBtn.disabled = true;
+        deferredInstallPrompt.prompt();
+        try {
+          await deferredInstallPrompt.userChoice;
+        } finally {
+          deferredInstallPrompt = null;
+          el.installBtn.disabled = false;
+          updateInstallButtonState();
+        }
+        return;
+      }
+
+      // Fallback when browser doesn't expose beforeinstallprompt:
+      // Provide instructions (Android/iOS differences).
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      if (isIOS) {
+        announce('iOS: gebruik Deel → "Zet op beginscherm" om te installeren.');
+      } else {
+        announce('Android/Chrome: open het browsermenu (⋮) en kies "Install app" of "Add to Home screen".');
       }
     });
+  }
+
+  function updateInstallButtonState() {
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true; // iOS legacy
+
+    // If already installed/standalone, hide or disable the button
+    if (isStandalone) {
+      el.installBtn.disabled = true;
+      el.installBtn.textContent = 'Geïnstalleerd';
+      return;
+    }
+
+    el.installBtn.disabled = false;
+
+    // If we have the real prompt, make it clear
+    if (deferredInstallPrompt) {
+      el.installBtn.textContent = 'Installeren';
+    } else {
+      el.installBtn.textContent = 'Installeren / Startscherm';
+    }
   }
 
   function wireUI() {
