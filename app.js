@@ -444,13 +444,13 @@
       }
 
       // Fallback when browser doesn't expose beforeinstallprompt:
-      // Provide instructions (Android/iOS differences).
       const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-      if (isIOS) {
-        announce('iOS: gebruik Deel → "Zet op beginscherm" om te installeren.');
-      } else {
-        announce('Android/Chrome: open het browsermenu (⋮) en kies "Install app" of "Add to Home screen".');
-      }
+
+    const msg = isIOS
+      ? 'iOS: gebruik Deel → "Zet op beginscherm" om te installeren.'
+      : 'Android/Chrome: open het browsermenu (⋮) en kies "Install app". Als je alleen "Toevoegen aan startscherm" ziet, is de PWA nog niet installable. Controleer manifest/scope/service worker.';
+      announce(msg);
+      alert(msg);
     });
   }
 
