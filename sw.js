@@ -17,8 +17,8 @@ const APP_SHELL = [
   u('./styles.css'),
   u('./app.js'),
   u('./manifest.json'),
-  u('./icons/icon-192.png'),
-  u('./icons/icon-512.png')
+  u('.icon-192.png'),
+  u('.icon-512.png')
 ];
 
 self.addEventListener('install', (event) => {
